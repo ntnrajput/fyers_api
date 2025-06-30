@@ -10,7 +10,8 @@ from side_functions import get_support_levels
 
 # Configuration
 client_id = "VE3CCLJZWA-100" 
-access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiZDoxIiwiZDoyIiwieDowIiwieDoxIiwieDoyIl0sImF0X2hhc2giOiJnQUFBQUFCb1lMeTdWOVNaWHFJdjdQcVJDTUFYdXg0a2hxUWlVc3pucWVrOHZSWENNbHJwcnBEaVp6aUVwYVlVeEpZVkNUQnJBU2dtSzBma1VnS1ZmSUR0ZkZueXpiUGtGeTR4ZEhQaFRYLVhLSG9LWk9LbThhTT0iLCJkaXNwbGF5X25hbWUiOiIiLCJvbXMiOiJLMSIsImhzbV9rZXkiOiI5YjViNjVmY2VmMzliNjJjZDlkZjBjZmU4YzhjYmRlMDk3ZDQxYmRkMGRlMmFiNWZlZjgwYWZjYyIsImlzRGRwaUVuYWJsZWQiOiJOIiwiaXNNdGZFbmFibGVkIjoiTiIsImZ5X2lkIjoiWFQwMjYyNCIsImFwcFR5cGUiOjEwMCwiZXhwIjoxNzUxMjQzNDAwLCJpYXQiOjE3NTExNzAyMzUsImlzcyI6ImFwaS5meWVycy5pbiIsIm5iZiI6MTc1MTE3MDIzNSwic3ViIjoiYWNjZXNzX3Rva2VuIn0.Q7_Hqx0rCw3uJ1tr_6H8d0Lk9bw6iGtmQXyw4v9_FeI"
+access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiZDoxIiwiZDoyIiwieDowIiwieDoxIiwieDoyIl0sImF0X2hhc2giOiJnQUFBQUFCb1lnbkMzVTVzRi1XN2FHb0h1OFE3bjJsOG9FbXlzVlhPN0dXSUtCSFFQUW9BWGk3aVVsTDJEaWRkcklNQWhoR0h0U3NVUm9DNHozNzZvV1R6SU03Um9qVml0RkFlZGgzdEtybUo5VkpzWkpXUzJYbz0iLCJkaXNwbGF5X25hbWUiOiIiLCJvbXMiOiJLMSIsImhzbV9rZXkiOiI5YjViNjVmY2VmMzliNjJjZDlkZjBjZmU4YzhjYmRlMDk3ZDQxYmRkMGRlMmFiNWZlZjgwYWZjYyIsImlzRGRwaUVuYWJsZWQiOiJOIiwiaXNNdGZFbmFibGVkIjoiTiIsImZ5X2lkIjoiWFQwMjYyNCIsImFwcFR5cGUiOjEwMCwiZXhwIjoxNzUxMzI5ODAwLCJpYXQiOjE3NTEyNTU0OTAsImlzcyI6ImFwaS5meWVycy5pbiIsIm5iZiI6MTc1MTI1NTQ5MCwic3ViIjoiYWNjZXNzX3Rva2VuIn0.AXxKQoVnw_cqqWz4eKuK7S8uOx8BBwxk4xJjRIhazrw"
+
 fyers = fyersModel.FyersModel(client_id = client_id, is_async=False, token = access_token, log_path="")
 today = datetime.today().date()
 csv_file = f"{today}.csv"
@@ -61,16 +62,19 @@ def has_open_positions():
 def search_trade():
     get_history('NSE:Nifty50-INDEX')
     ema_logic = check_ema_logic()
-    print(ema_logic)
+    print(ema_logic, datetime.now())
     
 def check_ema_logic():
     df = pd.read_csv(history_csv)
     ema_20 = df['ema20'].iloc[-1]
     ema_50 = df['ema50'].iloc[-1]
-    if ema_20 > ema_50:
+    ltp = df['close'].iloc[-1]
+    if ema_20 > ema_50 and ltp > ema_50 :
         return "Bullish"
-    else:
+    elif ema_20 < ema_50 and ltp < ema_50 :
         return "Bearish"
+    else:
+        return "No Direction"
 
 def monitor():
     global last_check
